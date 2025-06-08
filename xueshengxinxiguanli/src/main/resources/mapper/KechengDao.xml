@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.KechengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.laoshi_id as laoshiId
+        ,a.kecheng_name as kechengName
+        ,a.kecheng_content as kechengContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.KechengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,laoshi.username as username
+        ,laoshi.password as password
+        ,laoshi.name as name
+        ,laoshi.phone as phone
+        ,laoshi.id_number as idNumber
+        ,laoshi.sex_types as sexTypes
+        ,laoshi.my_photo as myPhoto
+        ,laoshi.nation as nation
+        ,laoshi.politics_types as politicsTypes
+        ,laoshi.birthplace as birthplace
+
+        FROM kecheng  a
+        left JOIN laoshi laoshi ON a.laoshi_id = laoshi.id
+
+        <where>
+            <if test="params.laoshiId != null">
+                and a.laoshi_id = #{params.laoshiId}
+            </if>
+            <if test=" params.kechengName != '' and params.kechengName != null and params.kechengName != 'null' ">
+                and a.kecheng_name like CONCAT('%',#{params.kechengName},'%')
+            </if>
+            <if test=" params.kechengContent != '' and params.kechengContent != null and params.kechengContent != 'null' ">
+                and a.kecheng_content like CONCAT('%',#{params.kechengContent},'%')
+            </if>
+
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and laoshi.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and laoshi.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.name != '' and params.name != null and params.name != 'null' ">
+                and laoshi.name like CONCAT('%',#{params.name},'%')
+            </if>
+            <if test=" params.phone != '' and params.phone != null and params.phone != 'null' ">
+                and laoshi.phone like CONCAT('%',#{params.phone},'%')
+            </if>
+            <if test=" params.idNumber != '' and params.idNumber != null and params.idNumber != 'null' ">
+                and laoshi.id_number like CONCAT('%',#{params.idNumber},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and laoshi.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.nation != '' and params.nation != null and params.nation != 'null' ">
+                and laoshi.nation like CONCAT('%',#{params.nation},'%')
+            </if>
+            <if test="params.politicsTypes != null">
+                and laoshi.politics_types = #{params.politicsTypes}
+            </if>
+
+            <if test=" params.birthplace != '' and params.birthplace != null and params.birthplace != 'null' ">
+                and laoshi.birthplace like CONCAT('%',#{params.birthplace},'%')
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>

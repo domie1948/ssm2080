@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BanjiKechengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.banji_id as banjiId
+        ,a.kecheng_id as kechengId
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BanjiKechengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,banji.zhuanye_types as zhuanyeTypes
+        ,banji.banji_name as banjiName
+        ,kecheng.laoshi_id as laoshiId
+        ,kecheng.kecheng_name as kechengName
+        ,kecheng.kecheng_content as kechengContent
+        ,l.name as name
+        ,l.phone as phone
+        ,l.id_number as idNumber
+
+        FROM banji_kecheng  a
+        left JOIN banji banji ON a.banji_id = banji.id
+        left JOIN kecheng kecheng ON a.kecheng_id = kecheng.id
+        left JOIN laoshi l ON l.id = kecheng.laoshi_id
+
+        <where>
+            <if test="params.banjiId != null">
+                and a.banji_id = #{params.banjiId}
+            </if>
+            <if test="params.kechengId != null">
+                and a.kecheng_id = #{params.kechengId}
+            </if>
+
+            <if test="params.zhuanyeTypes != null">
+                and banji.zhuanye_types = #{params.zhuanyeTypes}
+            </if>
+
+            <if test=" params.banjiName != '' and params.banjiName != null and params.banjiName != 'null' ">
+                and banji.banji_name like CONCAT('%',#{params.banjiName},'%')
+            </if>
+            <if test="params.laoshiId != null">
+                and kecheng.laoshi_id = #{params.laoshiId}
+            </if>
+            <if test=" params.kechengName != '' and params.kechengName != null and params.kechengName != 'null' ">
+                and kecheng.kecheng_name like CONCAT('%',#{params.kechengName},'%')
+            </if>
+            <if test=" params.kechengContent != '' and params.kechengContent != null and params.kechengContent != 'null' ">
+                and kecheng.kecheng_content like CONCAT('%',#{params.kechengContent},'%')
+            </if>
+        </where>
+        order by a.id desc
+    </select>
+
+</mapper>
